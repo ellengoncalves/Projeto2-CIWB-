@@ -278,14 +278,8 @@
 
 })()
 
-// ** COOKIE **
+// ** COOKIES **
 function saveFormData() {
-  const predefinedName = "ellen";
-  const predefinedEmail = "ellen@ifsp.com";
-  const predefinedPhone = "(16) 99629-5710";
-  const predefinedData = "20/12";
-  const predefinedTime = "20:00";
-
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
   const phone = document.getElementById("phone").value;
@@ -294,67 +288,68 @@ function saveFormData() {
   const people = document.getElementById("people").value;
   const message = document.getElementById("message").value;
 
-  if (name === predefinedName && email === predefinedEmail && phone === predefinedPhone && date === predefinedData && time === predefinedTime){
-    document.cookie = `user_name=${name}; expires=${getCookieExpiry(7)}; path=/`;
-    document.cookie = `user_email=${email}; expires=${getCookieExpiry(7)}; path=/`;
-    document.cookie = `user_phone=${phone}; expires=${getCookieExpiry(7)}; path=/`;
-    document.cookie = `user_date=${date}; expires=${getCookieExpiry(7)}; path=/`;
-    document.cookie = `user_time=${time}; expires=${getCookieExpiry(7)}; path=/`;
-    document.cookie = `user_people=${people}; expires=${getCookieExpiry(7)}; path=/`;
-    document.cookie = `user_message=${message}; expires=${getCookieExpiry(7)}; path=/`;
-    const alertMessage = `Seus cookies foram salvos com sucesso!\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nDate: ${date}\nTime: ${time}\nPeople: ${people}\nMessage: ${message}`;
-    alert(alertMessage);
-  }
+  document.cookie = `user_name=${name}; expires=${getCookieExpiry(7)}; path=/`;
+  document.cookie = `user_email=${email}; expires=${getCookieExpiry(7)}; path=/`;
+  document.cookie = `user_phone=${phone}; expires=${getCookieExpiry(7)}; path=/`;
+  document.cookie = `user_date=${date}; expires=${getCookieExpiry(7)}; path=/`;
+  document.cookie = `user_time=${time}; expires=${getCookieExpiry(7)}; path=/`;
+  document.cookie = `user_people=${people}; expires=${getCookieExpiry(7)}; path=/`;
+  document.cookie = `user_message=${message}; expires=${getCookieExpiry(7)}; path=/`;
+
+  const alertMessage = `Seus cookies foram salvos com sucesso!\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nDate: ${date}\nTime: ${time}\nPeople: ${people}\nMessage: ${message}`;
+  alert(alertMessage);
 }
 
-// Função para obter a data de expiração para o cookie
-function getCookieExpiry(days) {
-  const date = new Date();
-  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-  return date.toUTCString();
-}
-
-// obtém o valor de um cookie pelo nome
 function getCookie(name) {
   const cookies = document.cookie.split(';');
   for (const cookie of cookies) {
-      const [cookieName, cookieValue] = cookie.trim().split('=');
-      if (cookieName === name) {
-          return cookieValue;
-      }
+    const [cookieName, cookieValue] = cookie.trim().split('=');
+    if (cookieName === name) {
+      return cookieValue;
+    }
   }
   return null;
 }
 
-// adciona um ouvinte de evento ao formulário para salvar os dados nos cookies quando o formulário for enviado (quando clicar no botão enviar/submit)
-document.getElementById(".php-email-form").addEventListener("submit", function (event) {
-  // salva os dados antes de enviar o formulário
-  saveFormData();
-});
+function fillFormFromCookies() {
+  document.getElementById("name").value = getCookie("user_name") || "";
+  document.getElementById("email").value = getCookie("user_email") || "";
+  document.getElementById("phone").value = getCookie("user_phone") || "";
+  document.getElementById("date").value = getCookie("user_date") || "";
+  document.getElementById("time").value = getCookie("user_time") || "";
+  document.getElementById("people").value = getCookie("user_people") || "";
+  document.getElementById("message").value = getCookie("user_message") || "";
+}
 
-// Função para salvar dados no Local Storage
+window.addEventListener("load", fillFormFromCookies);
+
 function saveFormDataToLocalStorage() {
-  const predefName = "ariane";
-  const predefEmail = "ariane@ifsp.com";
-
   const name = document.getElementById("name2").value;
   const email = document.getElementById("email2").value;
   const subject = document.getElementById("subject").value;
   const message = document.getElementById("message2").value;
 
+  const formData = { name, email, subject, message };
+  localStorage.setItem('formData', JSON.stringify(formData));
 
-  if (name === predefName && email === predefEmail){
-    // Armazenar os dados no Local Storage como uma string JSON
-    const formData = { name, email, subject, message };
-    localStorage.setItem('formData', JSON.stringify(formData));
-
-    // Exibir um alerta indicando que os dados foram salvos com sucesso
-    const alertMessage = `Dados salvos com sucesso!\n\nName: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage: ${message}`;
-    alert(alertMessage);
-  }
+  const alertMessage = `Dados salvos com sucesso!\n\nName: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage: ${message}`;
+  alert(alertMessage);
 }
 
-document.querySelector(".php-email-forms").addEventListener("submit", function (event) {
+function fillFormFromLocalStorage() {
+  const formData = JSON.parse(localStorage.getItem('formData')) || {};
+  document.getElementById("name2").value = formData.name || "";
+  document.getElementById("email2").value = formData.email || "";
+  document.getElementById("subject").value = formData.subject || "";
+  document.getElementById("message2").value = formData.message || "";
+}
+
+window.addEventListener("load", fillFormFromLocalStorage);
+
+document.querySelector(".php-email-form").addEventListener("submit", function (event) {
+  saveFormData();
+});
+
+document.getElementById("php-email-form").addEventListener("submit", function (event) {
   saveFormDataToLocalStorage();
-  event.preventDefault();
 });
